@@ -23,7 +23,6 @@ func main() {
 	switch os.Args[1] {
 	case "build_success":
 		releaseBody := transferac.GetAllAppReleaseLasted(config, os.Args[2], os.Args[3])
-		fmt.Println(releaseBody)
 		telegram.SentMessageToTelegram(
 			config.TelegramConfig.TelegramChatId,
 			releaseBody,
