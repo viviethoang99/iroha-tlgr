@@ -1,0 +1,12 @@
+{
+  "appcenter_token" : "xxxxxxxxxxxxxxxxx",
+  "telegram_config": {
+    "telegram_chat_id": -123456789,
+    "token_bot_telegram": "xxxxxxxxxxxxxxxxx"
+  },
+  "env_config": {
+    "owner":"xxxxxxxxxxxxx",
+    "app_name_android": "xxxxxxxxxxxxxxxxx",
+    "app_name_ios": "xxxxxxxxxxxxxxx"
+  }
+}
