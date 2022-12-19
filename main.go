@@ -10,8 +10,7 @@ import (
 
 // Args
 // 1, Action
-// 2, Author commit
-// 3, Decs
+// 2, Author comm
 
 func main() {
 	config, envError := utils.LoadConfig(".")
@@ -22,7 +21,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "build_success":
-		releaseBody := transferac.GetAllAppReleaseLasted(config, os.Args[2], os.Args[3])
+		releaseBody := transferac.GetAllAppReleaseLasted(config, os.Args[2])
 		telegram.SentMessageToTelegram(
 			config.TelegramConfig.TelegramChatId,
 			releaseBody,

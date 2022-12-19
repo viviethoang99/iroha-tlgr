@@ -16,7 +16,7 @@ type BuildInfo struct {
 	IosInfo Release
 }
 
-func (buildInfo BuildInfo) TelegramReleaseMessage(author string, desc string) string {
+func (buildInfo BuildInfo) TelegramReleaseMessage(author string) string {
 	var resultString string
 	apkSize := buildInfo.ApkInfo.Size >> 20
 	iosSize := buildInfo.IosInfo.Size >> 20
@@ -27,9 +27,6 @@ func (buildInfo BuildInfo) TelegramReleaseMessage(author string, desc string) st
 	}
 	if buildInfo.IosInfo.ShortVersion != "" && buildInfo.IosInfo.Version != "" {
 		resultString += "*Version:* " + buildInfo.IosInfo.ShortVersion + ` - ` + buildInfo.IosInfo.Version + "\n"
-	}
-	if desc != "" {
-		resultString += "*Nội dung:* " + desc + "\n"
 	}
 	if !(apkSize == 0 && iosSize == 0) {
 		resultString += "*Kích thước tệp:* \n"
