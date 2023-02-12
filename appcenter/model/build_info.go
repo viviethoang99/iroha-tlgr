@@ -16,12 +16,15 @@ type BuildInfo struct {
 	IosInfo Release
 }
 
-func (buildInfo BuildInfo) TelegramReleaseMessage(author string) string {
+func (buildInfo BuildInfo) TelegramReleaseMessage(author string, branch string) string {
 	var resultString string
 	apkSize := buildInfo.ApkInfo.Size >> 20
 	iosSize := buildInfo.IosInfo.Size >> 20
 	updateAt := time.Now().Format("15h04 - 02/01/2006 ")
 	resultString += `✨ *Cập nhật lúc ` + updateAt + `* ✨` + "\n"
+	if branch != "" {
+		resultString += `*Nhánh:* ` + branch + "\n"
+	}
 	if author != "" {
 		resultString += `*Người build:* ` + author + "\n"
 	}

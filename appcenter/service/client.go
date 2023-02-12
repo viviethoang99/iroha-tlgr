@@ -15,9 +15,6 @@ const (
 )
 
 func (rt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	//req.Header.Add(
-	//	"authorization", rt.token,
-	//)
 	req.Header.Add(
 		"x-api-token", rt.token,
 	)

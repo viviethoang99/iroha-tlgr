@@ -7,7 +7,7 @@ import (
 	"iroha-tlgr/utils"
 )
 
-func GetAllAppReleaseLasted(config utils.Config, author string) string {
+func GetAllAppReleaseLasted(config utils.Config) modelac.BuildInfo {
 	androidApp := modelac.App{
 		Owner:   config.ENVConfig.Owner,
 		AppName: config.ENVConfig.AppNameAndroid,
@@ -18,5 +18,5 @@ func GetAllAppReleaseLasted(config utils.Config, author string) string {
 	}
 	service := serviceac.CreateAPIWithClientParams(config.AppCenterToken)
 	biz := bizac.NewFindReleaseAppBiz(service)
-	return biz.FindAllReleaseApp(androidApp, iosApp).TelegramReleaseMessage(author)
+	return biz.FindAllReleaseApp(androidApp, iosApp)
 }

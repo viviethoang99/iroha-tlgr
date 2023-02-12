@@ -7,12 +7,19 @@ type Config struct {
 	TelegramConfig struct {
 		TelegramChatId   int    `mapstructure:"telegram_chat_id"`
 		TokenBotTelegram string `mapstructure:"token_bot_telegram"`
+		FileIdFailed     string `mapstructure:"file_id_failed"`
 	} `mapstructure:"telegram_config"`
 	ENVConfig struct {
 		Owner          string `mapstructure:"owner"`
 		AppNameAndroid string `mapstructure:"app_name_android"`
 		AppNameIos     string `mapstructure:"app_name_ios"`
 	} `mapstructure:"env_config"`
+	GitlabConfig struct {
+		AccessToken string `mapstructure:"access_token"`
+		IdProject   int    `mapstructure:"id_project"`
+		BaseUrl     string `mapstructure:"base_url"`
+	} `mapstructure:"gitlab_config"`
+	SpecialUser map[string]string `mapstructure:"special_user"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
