@@ -19,7 +19,8 @@ type Config struct {
 		IdProject   int    `mapstructure:"id_project"`
 		BaseUrl     string `mapstructure:"base_url"`
 	} `mapstructure:"gitlab_config"`
-	SpecialUser map[string]string `mapstructure:"special_user"`
+	SpecialUser     map[string]string `mapstructure:"special_user"`
+	ListBranchMerge []string          `mapstructure:"list_branch_merge"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

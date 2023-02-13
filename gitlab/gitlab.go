@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func GetInfoUserCreateMergeRequest(config utils.Config, shouldGetData bool) (*gitlab.MergeRequest, error) {
+func GetInfoUserCreateMergeRequest(config utils.Config, shouldGetData bool, branch string) (*gitlab.MergeRequest, error) {
 	if !shouldGetData {
 		return nil, nil
 	}
@@ -19,8 +19,9 @@ func GetInfoUserCreateMergeRequest(config utils.Config, shouldGetData bool) (*gi
 		return nil, err
 	}
 	opts := gitlab.ListProjectMergeRequestsOptions{
-		Scope: gitlab.String("all"),
-		State: gitlab.String("merged"),
+		Scope:        gitlab.String("all"),
+		State:        gitlab.String("merged"),
+		TargetBranch: gitlab.String(branch),
 	}
 	mergeRequests, _, err := git.MergeRequests.ListProjectMergeRequests(
 		config.GitlabConfig.IdProject,

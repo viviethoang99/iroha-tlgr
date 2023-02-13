@@ -36,8 +36,8 @@ func main() {
 	switch os.Args[1] {
 	case "build_success":
 		releaseBody := transferac.GetAllAppReleaseLasted(config)
-		shouldGetDataMerge := slices.Contains([]string{"prod", "beta"}, branch) // true
-		infoMerge, _ := gitlab.GetInfoUserCreateMergeRequest(config, shouldGetDataMerge)
+		shouldGetDataMerge := slices.Contains(config.ListBranchMerge, branch) // true
+		infoMerge, _ := gitlab.GetInfoUserCreateMergeRequest(config, shouldGetDataMerge, branch)
 		if infoMerge != nil && infoMerge.Author.Name != "" {
 			author = infoMerge.Author.Name
 		}
