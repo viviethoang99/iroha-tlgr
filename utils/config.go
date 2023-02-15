@@ -3,6 +3,7 @@ package utils
 import "github.com/spf13/viper"
 
 type Config struct {
+	NameBranch     string `mapstructure:"name_branch"`
 	AppCenterToken string `mapstructure:"appcenter_token"`
 	TelegramConfig struct {
 		TelegramChatId   int    `mapstructure:"telegram_chat_id"`
@@ -19,8 +20,14 @@ type Config struct {
 		IdProject   int    `mapstructure:"id_project"`
 		BaseUrl     string `mapstructure:"base_url"`
 	} `mapstructure:"gitlab_config"`
-	SpecialUser     map[string]string `mapstructure:"special_user"`
-	ListBranchMerge []string          `mapstructure:"list_branch_merge"`
+	SpecialUsers    []SpecialUser `mapstructure:"special_users"`
+	ListBranchMerge []string      `mapstructure:"list_branch_merge"`
+}
+
+type SpecialUser struct {
+	UserName string `mapstructure:"username"`
+	ID       string `mapstructure:"id"`
+	FullName string `mapstructure:"full_name"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

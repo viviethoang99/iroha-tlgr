@@ -41,7 +41,7 @@ func main() {
 		if infoMerge != nil && infoMerge.Author.Name != "" {
 			author = infoMerge.Author.Name
 		}
-		content := releaseBody.TelegramReleaseMessage(author, os.Args[3])
+		content := releaseBody.TelegramReleaseMessage(author, config.NameBranch)
 		telegram.SentMessageToTelegram(
 			config.TelegramConfig.TelegramChatId,
 			content,
@@ -50,8 +50,8 @@ func main() {
 	case "build_failed":
 		isSpecialUser := false
 		content := modelac.TelegramBuildFailed(author, config)
-		for key, _ := range config.SpecialUser {
-			if strings.ToLower(key) == strings.ToLower(author) {
+		for _, spUser := range config.SpecialUsers {
+			if strings.ToLower(spUser.UserName) == strings.ToLower(author) {
 				isSpecialUser = true
 				break
 			}

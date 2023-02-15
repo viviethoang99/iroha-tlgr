@@ -22,8 +22,9 @@ func (buildInfo BuildInfo) TelegramReleaseMessage(author string, branch string) 
 	iosSize := buildInfo.IosInfo.Size >> 20
 	updateAt := time.Now().Format("15h04 - 02/01/2006 ")
 	resultString += `✨ *Cập nhật lúc ` + updateAt + `* ✨` + "\n"
+	resultString += "------------------------- \n"
 	if branch != "" {
-		resultString += `*Nhánh:* ` + branch + "\n"
+		resultString += `*Nhánh:* #` + branch + "\n"
 	}
 	if author != "" {
 		resultString += `*Người build:* ` + author + "\n"
@@ -72,6 +73,7 @@ func toEscapeMsg(content string) string {
 		".", "\\.",
 		"=", "\\=",
 		"_", "\\_",
+		"#", "\\#",
 	)
 	return r.Replace(content)
 }

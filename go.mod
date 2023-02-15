@@ -5,6 +5,8 @@ go 1.19
 require (
 	github.com/hashicorp/go-retryablehttp v0.7.1
 	github.com/spf13/viper v1.14.0
+	github.com/xanzy/go-gitlab v0.80.0
+	golang.org/x/exp v0.0.0-20230212135524-a684f29349b6
 )
 
 require (
@@ -22,8 +24,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
-	github.com/xanzy/go-gitlab v0.80.0 // indirect
-	golang.org/x/exp v0.0.0-20230212135524-a684f29349b6 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/oauth2 v0.3.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
