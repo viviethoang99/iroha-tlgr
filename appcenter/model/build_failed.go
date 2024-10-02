@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func TelegramBuildFailed(author string, config utils.Config) string {
+func TelegramBuildFailed(author string, config utils.ProjectResult) string {
 	for _, spUser := range config.SpecialUsers {
 		if strings.ToLower(spUser.UserName) == strings.ToLower(author) {
 			userTag := fmt.Sprintf("[%s](tg://user?id=%s)", strings.Title(spUser.FullName), spUser.ID)

@@ -17,7 +17,7 @@ type findAllReleaseBiz struct {
 	service FindReleaseService
 }
 
-func (biz *findAllReleaseBiz) FindAllReleaseApp(infoAndroid modelac.App, infoIos modelac.App) modelac.BuildInfo {
+func (biz *findAllReleaseBiz) FindAllReleaseApp(infoAndroid, infoIos modelac.App) modelac.BuildInfo {
 	releaseAndroid, errAndroid := biz.service.GetAppReleaseLastDetails(infoAndroid)
 	if errAndroid != nil {
 		fmt.Println("không lấy được dữ liệu", errAndroid.Error())

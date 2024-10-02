@@ -12,63 +12,85 @@ import (
 	"strings"
 )
 
+// Constants
+const (
+	ActionBuildSuccess = "build_success"
+	ActionBuildFailed  = "build_failed"
+	ErrorLoadConfig    = "not load config"
+	ErrorFindConfig    = "not find config by name project"
+	ErrorInvalidParam  = "Sai tham số truyền vào: "
+)
+
 // Args
 // 1, Action
 // 2, Author comm
 // 3, Branch
-// 4, Des
+// 4, Name project
 func main() {
-	if len(os.Args) > 4 && strings.Contains(os.Args[4], "NO_PUSH_NOTI") {
-		fmt.Println("Đóng ứng dụng")
-		os.Exit(0)
+	branch := os.Args[3]
+	config, err := utils.LoadConfig()
+	if err != nil {
+		handleError(ErrorLoadConfig, err)
 	}
 
-	branch := strings.ToLower(os.Args[3])
-	urlConfig := "./config/" + branch
-	config, envError := utils.LoadConfig(urlConfig)
 	author := os.Args[2]
-
-	if envError != nil {
-		fmt.Println("not load config", envError)
-		panic(envError)
+	configProject, err := utils.FindConfigByNameProject(config, os.Args[4], branch)
+	if err != nil {
+		handleError(ErrorFindConfig, err)
 	}
 
 	switch os.Args[1] {
-	case "build_success":
-		releaseBody := transferac.GetAllAppReleaseLasted(config)
-		shouldGetDataMerge := slices.Contains(config.ListBranchMerge, branch) // true
-		infoMerge, _ := gitlab.GetInfoUserCreateMergeRequest(config, shouldGetDataMerge, branch)
-		if infoMerge != nil && infoMerge.Author.Name != "" {
-			author = infoMerge.Author.Name
-		}
-		content := releaseBody.TelegramReleaseMessage(author, config.NameBranch)
-		telegram.SentMessageToTelegram(
-			config.TelegramConfig.TelegramChatId,
-			content,
-			config.TelegramConfig.TokenBotTelegram,
-		)
-	case "build_failed":
-		isSpecialUser := false
-		content := modelac.TelegramBuildFailed(author, config)
-		for _, spUser := range config.SpecialUsers {
-			if strings.ToLower(spUser.UserName) == strings.ToLower(author) {
-				isSpecialUser = true
-				break
-			}
-		}
-		if !isSpecialUser {
-			telegram.SentStickerToTelegram(
-				config.TelegramConfig.TelegramChatId,
-				config.TelegramConfig.FileIdFailed,
-				config.TelegramConfig.TokenBotTelegram,
-			)
-		}
-		telegram.SentMessageToTelegram(
-			config.TelegramConfig.TelegramChatId,
-			content,
-			config.TelegramConfig.TokenBotTelegram,
-		)
+	case ActionBuildSuccess:
+		handleBuildSuccess(config, configProject, branch, author)
+	case ActionBuildFailed:
+		handleBuildFailed(configProject, author)
 	default:
-		fmt.Println("Sai tham số truyền vào: ", os.Args[1])
+		fmt.Println(ErrorInvalidParam, os.Args[1])
 	}
+}
+
+func handleError(message string, err error) {
+	fmt.Println(message, err)
+	panic(err)
+}
+
+func handleBuildSuccess(config utils.Config, configProject utils.ProjectResult, branch, author string) {
+	releaseBody := transferac.GetAllAppReleaseLasted(config)
+	shouldGetDataMerge := slices.Contains(configProject.ListBranchMerge, branch)
+	infoMerge, _ := gitlab.GetInfoUserCreateMergeRequest(config, shouldGetDataMerge, branch)
+	if infoMerge != nil && infoMerge.Author.Name != "" {
+		author = infoMerge.Author.Name
+	}
+	content := releaseBody.TelegramReleaseMessage(author, configProject.Branches.BranchName)
+	telegram.SentMessageToTelegram(
+		configProject.TelegramConfig.TelegramChatId,
+		content,
+		configProject.TelegramConfig.TokenBotTelegram,
+	)
+}
+
+func handleBuildFailed(configProject utils.ProjectResult, author string) {
+	isSpecialUser := isSpecialUser(configProject.SpecialUsers, author)
+	content := modelac.TelegramBuildFailed(author, configProject)
+	if !isSpecialUser {
+		telegram.SentStickerToTelegram(
+			configProject.TelegramConfig.TelegramChatId,
+			configProject.TelegramConfig.FileIdFailed,
+			configProject.TelegramConfig.TokenBotTelegram,
+		)
+	}
+	telegram.SentMessageToTelegram(
+		configProject.TelegramConfig.TelegramChatId,
+		content,
+		configProject.TelegramConfig.TokenBotTelegram,
+	)
+}
+
+func isSpecialUser(specialUsers []utils.SpecialUser, author string) bool {
+	for _, spUser := range specialUsers {
+		if strings.EqualFold(spUser.UserName, author) {
+			return true
+		}
+	}
+	return false
 }

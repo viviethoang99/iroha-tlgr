@@ -1,37 +1,64 @@
 package utils
 
-import "github.com/spf13/viper"
+import (
+	"errors"
+	"github.com/spf13/viper"
+)
 
 type Config struct {
-	NameBranch     string `mapstructure:"name_branch"`
-	AppCenterToken string `mapstructure:"appcenter_token"`
-	TelegramConfig struct {
-		TelegramChatId   int    `mapstructure:"telegram_chat_id"`
-		TokenBotTelegram string `mapstructure:"token_bot_telegram"`
-		FileIdFailed     string `mapstructure:"file_id_failed"`
-	} `mapstructure:"telegram_config"`
-	ENVConfig struct {
-		Owner          string `mapstructure:"owner"`
-		AppNameAndroid string `mapstructure:"app_name_android"`
-		AppNameIos     string `mapstructure:"app_name_ios"`
-	} `mapstructure:"env_config"`
-	GitlabConfig struct {
-		AccessToken string `mapstructure:"access_token"`
-		IdProject   int    `mapstructure:"id_project"`
-		BaseUrl     string `mapstructure:"base_url"`
-	} `mapstructure:"gitlab_config"`
-	SpecialUsers    []SpecialUser `mapstructure:"special_users"`
-	ListBranchMerge []string      `mapstructure:"list_branch_merge"`
+	Projects []Project `json:"projects"`
+}
+
+type Project struct {
+	ProjectName     string         `json:"project_name"`
+	AppcenterToken  string         `json:"appcenter_token"`
+	TelegramConfig  TelegramConfig `json:"telegram_config"`
+	GitlabConfig    GitlabConfig   `json:"gitlab_config"`
+	ListBranchMerge []string       `json:"list_branch_merge"`
+	SpecialUsers    []SpecialUser  `json:"special_users"`
+	Branches        []Branch       `json:"branches"`
+}
+
+type ProjectResult struct {
+	ProjectName     string         `json:"project_name"`
+	AppcenterToken  string         `json:"appcenter_token"`
+	TelegramConfig  TelegramConfig `json:"telegram_config"`
+	GitlabConfig    GitlabConfig   `json:"gitlab_config"`
+	ListBranchMerge []string       `json:"list_branch_merge"`
+	SpecialUsers    []SpecialUser  `json:"special_users"`
+	Branches        Branch         `json:"branches"`
+}
+
+type TelegramConfig struct {
+	TelegramChatId   int    `json:"telegram_chat_id"`
+	TokenBotTelegram string `json:"token_bot_telegram"`
+	FileIdFailed     string `json:"file_id_failed"`
+}
+
+type GitlabConfig struct {
+	AccessToken string `json:"access_token"`
+	IdProject   int    `json:"id_project"`
+	BaseUrl     string `json:"base_url"`
 }
 
 type SpecialUser struct {
-	UserName string `mapstructure:"username"`
-	ID       string `mapstructure:"id"`
-	FullName string `mapstructure:"full_name"`
+	UserName string `json:"username"`
+	ID       string `json:"id"`
+	FullName string `json:"full_name"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
+type Branch struct {
+	BranchName string    `json:"branch_name"`
+	EnvConfig  EnvConfig `json:"env_config"`
+}
+
+type EnvConfig struct {
+	AppNameAndroid string `json:"app_name_android"`
+	AppNameIos     string `json:"app_name_ios"`
+}
+
+func LoadConfig() (config Config, err error) {
+	viper.AddConfigPath("./config")
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AutomaticEnv()
@@ -43,4 +70,27 @@ func LoadConfig(path string) (config Config, err error) {
 
 	err = viper.Unmarshal(&config)
 	return
+}
+
+func FindConfigByNameProject(config Config, nameProject string, branchName string) (ProjectResult, error) {
+	for _, project := range config.Projects {
+		if project.ProjectName != nameProject {
+			continue
+		}
+		for _, branch := range project.Branches {
+			if branch.BranchName == branchName {
+				return ProjectResult{
+					ProjectName:     project.ProjectName,
+					AppcenterToken:  project.AppcenterToken,
+					TelegramConfig:  project.TelegramConfig,
+					GitlabConfig:    project.GitlabConfig,
+					ListBranchMerge: project.ListBranchMerge,
+					SpecialUsers:    project.SpecialUsers,
+					Branches:        branch,
+				}, nil
+			}
+		}
+	}
+
+	return ProjectResult{}, errors.New("not found config by name project")
 }
